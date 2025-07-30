@@ -102,7 +102,7 @@ export const Dashboard = ({ projects, onNavigate, onChatSubmit }: DashboardProps
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Comece a escrever ou pergunte algo à IA..."
+                  placeholder="Comece a escrever ou pergunte algo à IA... (⌘K para comando rápido)"
                   className="w-full bg-transparent px-16 py-6 text-lg font-medium placeholder:text-muted-foreground focus:outline-none focus:placeholder:text-muted-foreground/50 transition-all"
                 />
                 <motion.button

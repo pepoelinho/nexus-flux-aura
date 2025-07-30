@@ -22,6 +22,11 @@
     --primary-foreground: 0 0% 100%;
     --primary-glow: 220 100% 65%; /* Lighter primary for glow effects */
     
+    /* Cyberpunk Theme Variables (activated via class) */
+    --cyber-primary: 280 100% 70%; /* Magenta */
+    --cyber-secondary: 180 100% 50%; /* Cyan */
+    --cyber-bg: 280 20% 8%; /* Dark purple-black */
+    
     /* Neutral Grays */
     --secondary: 0 0% 96.1%; /* Very light gray */
     --secondary-foreground: 0 0% 40%; /* #666666 - Medium gray */
@@ -120,6 +125,35 @@
     --aurora-2: 280 100% 70% / 0.03;
     --aurora-3: 160 100% 60% / 0.02;
   }
+
+  /* Cyberpunk Theme */
+  .cyberpunk {
+    --background: 280 20% 8%;
+    --foreground: 0 0% 95%;
+    --card: 280 15% 12%;
+    --card-foreground: 0 0% 95%;
+    --primary: 280 100% 70%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 180 100% 50%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 280 15% 15%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --border: 280 30% 20%;
+    --input: 280 15% 12%;
+    --ring: 280 100% 70%;
+    
+    /* Cyberpunk specific effects */
+    --cyber-glow: 0 0 20px hsl(280 100% 70% / 0.5);
+    --cyber-scan: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(280 100% 70% / 0.03) 2px,
+      hsl(280 100% 70% / 0.03) 4px
+    );
+  }
 }
 
 @layer base {
@@ -146,6 +180,35 @@
       radial-gradient(circle at 80% 20%, hsl(var(--aurora-2)) 0%, transparent 50%),
       radial-gradient(circle at 40% 80%, hsl(var(--aurora-3)) 0%, transparent 50%);
     animation: aurora-move 20s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Cyberpunk Background with Scanlines */
+  .cyberpunk body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--cyber-scan);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.1;
+  }
+
+  .cyberpunk body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 80%, hsl(280 100% 70% / 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(180 100% 50% / 0.08) 0%, transparent 50%);
+    animation: aurora-move 15s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: -1;
   }

@@ -5,6 +5,8 @@ import { LoadingScreen } from "./LoadingScreen";
 import { Sidebar } from "./Sidebar";
 import { Dashboard } from "./Dashboard";
 import { Chatbot } from "./Chatbot";
+import { CommandBar } from "./CommandBar";
+import { ThemeSelector } from "./ThemeSelector";
 import { toast } from "sonner";
 
 // AI Tools configuration
@@ -52,6 +54,7 @@ interface AppState {
 
 export const NexusApp = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [appState, setAppState] = useState<AppState>({
     currentView: 'dashboard',
     projects: [],
@@ -74,6 +77,17 @@ export const NexusApp = () => {
         console.error('Error loading saved state:', error);
       }
     }
+
+    // Global keyboard shortcut for command bar
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandBarOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Save state to localStorage
@@ -85,6 +99,10 @@ export const NexusApp = () => {
   useEffect(() => {
     document.documentElement.className = appState.theme;
   }, [appState.theme]);
+
+  const handleThemeChange = (theme: string) => {
+    setAppState(prev => ({ ...prev, theme: theme as 'light' | 'dark' }));
+  };
 
   const handleLoadingComplete = () => {
     setIsInitialLoading(false);
@@ -250,35 +268,10 @@ export const NexusApp = () => {
                 {/* Theme Setting */}
                 <div className="glass p-6 rounded-2xl">
                   <h2 className="text-xl font-semibold mb-4">Tema da Interface</h2>
-                  <p className="text-muted-foreground mb-4">
-                    Escolha entre o tema claro ou escuro.
-                  </p>
-                  <div className="flex gap-3">
-                    <motion.button
-                      onClick={() => setAppState(prev => ({ ...prev, theme: 'light' }))}
-                      className={`px-4 py-2 rounded-lg transition-colors ${
-                        appState.theme === 'light' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-secondary text-secondary-foreground'
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Claro
-                    </motion.button>
-                    <motion.button
-                      onClick={() => setAppState(prev => ({ ...prev, theme: 'dark' }))}
-                      className={`px-4 py-2 rounded-lg transition-colors ${
-                        appState.theme === 'dark' 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-secondary text-secondary-foreground'
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Escuro
-                    </motion.button>
-                  </div>
+                  <ThemeSelector 
+                    currentTheme={appState.theme}
+                    onThemeChange={handleThemeChange}
+                  />
                 </div>
               </div>
             </motion.div>
@@ -333,6 +326,14 @@ export const NexusApp = () => {
             </motion.div>
           </AnimatePresence>
         </main>
+
+        <CommandBar
+          isOpen={commandBarOpen}
+          onClose={() => setCommandBarOpen(false)}
+          onNavigate={handleNavigate}
+          onCreateProject={handleNewProject}
+          onCreateDocument={() => {/* TODO: Implement */}}
+        />
       </motion.div>
 
       <Toaster 
