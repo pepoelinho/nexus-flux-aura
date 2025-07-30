@@ -7,24 +7,15 @@ import { Dashboard } from "./Dashboard";
 import { Chatbot } from "./Chatbot";
 import { CommandBar } from "./CommandBar";
 import { ThemeSelector } from "./ThemeSelector";
+import { ToolsExplorer } from "./ToolsExplorer";
+import { ToolInterface } from "./ToolInterface";
 import { toast } from "sonner";
 
-// AI Tools configuration
-const AI_TOOLS = {
-  'resumidor': { name: 'Resumidor de Textos', icon: 'file-text', desc: 'Cria resumos concisos de textos longos.' },
-  'humanizador': { name: 'Humanizador de Escrita', icon: 'sparkles', desc: 'Torna textos de IA mais naturais e fluidos.' },
-  'corretor': { name: 'Corretor Ortográfico', icon: 'spell-check-2', desc: 'Corrige erros de gramática e ortografia.' },
-  'pesquisador': { name: 'Pesquisador de Livros', icon: 'book', desc: 'Sugere livros e artigos sobre um tema.' },
-  'gerador_questoes': { name: 'Gerador de Questões', icon: 'help-circle', desc: 'Cria perguntas e respostas sobre um texto.' },
-  'brainstorm': { name: 'Assistente de Brainstorm', icon: 'lightbulb', desc: 'Gera ideias criativas para qualquer tópico.' },
-  'formatador_citacoes': { name: 'Formatador de Citações', icon: 'quote', desc: 'Formata referências nos padrões ABNT/APA.' },
-  'explicador_codigo': { name: 'Explicador de Código', icon: 'code-2', desc: 'Explica o que um trecho de código faz.' },
-  'tradutor': { name: 'Tradutor Técnico', icon: 'languages', desc: 'Traduz textos técnicos entre idiomas.' },
-  'gerador_titulos': { name: 'Gerador de Títulos', icon: 'type', desc: 'Cria títulos criativos e otimizados.' },
-  'anti_plagio': { name: 'Refraseador Anti-Plágio', icon: 'shield', desc: 'Reescreve trechos para evitar plágio.' },
-  'analisador_argumentos': { name: 'Analisador de Argumentos', icon: 'list-checks', desc: 'Avalia a força e a lógica de argumentos.' },
-  'criador_glossario': { name: 'Criador de Glossário', icon: 'book-marked', desc: 'Cria uma lista de termos e definições.' },
-};
+// Import AI Tools from centralized data
+import { AI_TOOLS } from "@/data/aiTools";
+
+// Legacy tools configuration (keeping for compatibility)
+const LEGACY_AI_TOOLS = AI_TOOLS;
 
 interface Message {
   id: string;
@@ -45,10 +36,11 @@ interface AppState {
   currentView: string;
   projects: Project[];
   currentProjectId: string | null;
+  currentToolKey: string | null;
   sidebarCollapsed: boolean;
   chatMessages: Message[];
   apiKey: string;
-  theme: 'light' | 'dark';
+  theme: 'light' | 'dark' | 'cyberpunk';
   isLoading: boolean;
 }
 
@@ -59,6 +51,7 @@ export const NexusApp = () => {
     currentView: 'dashboard',
     projects: [],
     currentProjectId: null,
+    currentToolKey: null,
     sidebarCollapsed: false,
     chatMessages: [],
     apiKey: '',
@@ -101,7 +94,7 @@ export const NexusApp = () => {
   }, [appState.theme]);
 
   const handleThemeChange = (theme: string) => {
-    setAppState(prev => ({ ...prev, theme: theme as 'light' | 'dark' }));
+    setAppState(prev => ({ ...prev, theme: theme as 'light' | 'dark' | 'cyberpunk' }));
   };
 
   const handleLoadingComplete = () => {
@@ -112,7 +105,8 @@ export const NexusApp = () => {
     setAppState(prev => ({
       ...prev,
       currentView: view,
-      currentProjectId: data?.projectId || null
+      currentProjectId: data?.projectId || null,
+      currentToolKey: data?.toolKey || null
     }));
   };
 
@@ -145,42 +139,46 @@ export const NexusApp = () => {
     }
   };
 
-  const handleChatSubmit = (message: string) => {
+  const handleChatSubmit = (message: string): Promise<string> => {
     if (!appState.apiKey) {
       toast.error("Configure sua chave de API nas configurações primeiro!");
       handleNavigate('settings');
-      return;
+      return Promise.reject("API key not configured");
     }
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: message,
-      timestamp: new Date()
-    };
-
-    setAppState(prev => ({
-      ...prev,
-      currentView: 'chatbot',
-      chatMessages: [...prev.chatMessages, userMessage],
-      isLoading: true
-    }));
-
-    // Simulate AI response (replace with actual API call)
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: `Esta é uma resposta simulada para: "${message}". Em uma implementação real, aqui estaria a resposta da API do Google Gemini usando sua chave de API configurada.`,
+    return new Promise((resolve) => {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: message,
         timestamp: new Date()
       };
 
       setAppState(prev => ({
         ...prev,
-        chatMessages: [...prev.chatMessages, aiResponse],
-        isLoading: false
+        currentView: 'chatbot',
+        chatMessages: [...prev.chatMessages, userMessage],
+        isLoading: true
       }));
-    }, 2000);
+
+      // Simulate AI response (replace with actual API call)
+      setTimeout(() => {
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Esta é uma resposta simulada para: "${message}". Em uma implementação real, aqui estaria a resposta da API do Google Gemini usando sua chave de API configurada.`,
+          timestamp: new Date()
+        };
+
+        setAppState(prev => ({
+          ...prev,
+          chatMessages: [...prev.chatMessages, aiResponse],
+          isLoading: false
+        }));
+        
+        resolve(aiResponse.content);
+      }, 2000);
+    });
   };
 
   const renderCurrentView = () => {
@@ -226,6 +224,23 @@ export const NexusApp = () => {
               </div>
             </motion.div>
           </div>
+        );
+      
+      case 'tools':
+        return (
+          <ToolsExplorer
+            onSelectTool={(toolKey) => handleNavigate('tool-interface', { toolKey })}
+            onNavigate={handleNavigate}
+          />
+        );
+      
+      case 'tool-interface':
+        return (
+          <ToolInterface
+            toolKey={appState.currentToolKey!}
+            onBack={() => handleNavigate('tools')}
+            onGenerate={handleChatSubmit}
+          />
         );
       
       case 'settings':
@@ -339,7 +354,7 @@ export const NexusApp = () => {
       <Toaster 
         position="bottom-right"
         richColors
-        theme={appState.theme}
+        theme={appState.theme === 'cyberpunk' ? 'dark' : appState.theme}
       />
     </>
   );
