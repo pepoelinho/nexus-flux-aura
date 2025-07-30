@@ -30,6 +30,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'tools', label: 'Ferramentas IA', icon: Sparkles },
     { id: 'chatbot', label: 'Chatbot', icon: MessageCircle },
   ];
 

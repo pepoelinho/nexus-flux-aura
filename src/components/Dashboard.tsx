@@ -6,9 +6,10 @@ interface DashboardProps {
   projects: any[];
   onNavigate: (view: string, data?: any) => void;
   onChatSubmit: (message: string) => void;
+  onNewProject?: () => void;
 }
 
-export const Dashboard = ({ projects, onNavigate, onChatSubmit }: DashboardProps) => {
+export const Dashboard = ({ projects, onNavigate, onChatSubmit, onNewProject }: DashboardProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleChatSubmit = (e: React.FormEvent) => {
@@ -190,7 +191,7 @@ export const Dashboard = ({ projects, onNavigate, onChatSubmit }: DashboardProps
             </h3>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <motion.button
               onClick={() => onNavigate('chatbot')}
               className="glass p-4 rounded-xl text-center hover-glow group"
@@ -209,7 +210,24 @@ export const Dashboard = ({ projects, onNavigate, onChatSubmit }: DashboardProps
             </motion.button>
             
             <motion.button
-              onClick={() => onNavigate('newProject')}
+              onClick={() => onNavigate('tools')}
+              className="glass p-4 rounded-xl text-center hover-glow group"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="w-12 h-12 bg-primary/10 rounded-lg mx-auto mb-3 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Sparkles className="w-6 h-6 text-primary" />
+              </div>
+              <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                Ferramentas de IA
+              </h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                60+ ferramentas especializadas
+              </p>
+            </motion.button>
+            
+            <motion.button
+              onClick={() => onNewProject && onNewProject()}
               className="glass p-4 rounded-xl text-center hover-glow group"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Zap, FileText, MessageCircle, Settings, Plus, Book, Code, PenTool } from "lucide-react";
+import { Search, Zap, FileText, MessageCircle, Settings, Plus, Book, Code, PenTool, Sparkles, Globe, Briefcase, GraduationCap, Palette, TrendingUp } from "lucide-react";
 import { Button } from "./ui/button";
+import { AI_TOOLS, getAllCategories, getCategoryInfo } from "@/data/aiTools";
 
 interface CommandBarProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface CommandBarProps {
 const COMMANDS = [
   // Navigation
   { id: 'dashboard', label: 'Ir para Dashboard', icon: Search, group: 'Navegação' },
+  { id: 'tools', label: 'Ferramentas de IA', icon: Sparkles, group: 'Navegação' },
   { id: 'chatbot', label: 'Abrir Chatbot', icon: MessageCircle, group: 'Navegação' },
   { id: 'settings', label: 'Configurações', icon: Settings, group: 'Navegação' },
   
@@ -21,12 +23,13 @@ const COMMANDS = [
   { id: 'new-project', label: 'Criar Novo Projeto', icon: Plus, group: 'Criar' },
   { id: 'new-document', label: 'Novo Documento', icon: FileText, group: 'Criar' },
   
-  // AI Tools
-  { id: 'ai-resumidor', label: 'Resumir Texto', icon: FileText, group: 'IA' },
-  { id: 'ai-humanizador', label: 'Humanizar Texto', icon: PenTool, group: 'IA' },
-  { id: 'ai-corretor', label: 'Corrigir Texto', icon: Book, group: 'IA' },
-  { id: 'ai-codigo', label: 'Explicar Código', icon: Code, group: 'IA' },
-  { id: 'ai-brainstorm', label: 'Brainstorm', icon: Zap, group: 'IA' },
+  // Popular AI Tools
+  { id: 'ai-resumidor', label: 'Resumir Texto', icon: FileText, group: 'IA Popular' },
+  { id: 'ai-construtor_sites', label: 'Construtor de Sites', icon: Globe, group: 'IA Popular' },
+  { id: 'ai-pesquisador', label: 'Pesquisador de Livros', icon: Book, group: 'IA Popular' },
+  { id: 'ai-gerador_codigo', label: 'Gerar Código', icon: Code, group: 'IA Popular' },
+  { id: 'ai-brainstorm', label: 'Brainstorm', icon: Zap, group: 'IA Popular' },
+  { id: 'ai-copywriter', label: 'Copywriter', icon: PenTool, group: 'IA Popular' },
 ];
 
 export const CommandBar = ({ isOpen, onClose, onNavigate, onCreateProject, onCreateDocument }: CommandBarProps) => {
@@ -76,7 +79,11 @@ export const CommandBar = ({ isOpen, onClose, onNavigate, onCreateProject, onCre
       onCreateDocument();
     } else if (command.id.startsWith('ai-')) {
       const toolKey = command.id.replace('ai-', '');
-      onNavigate('chatbot', { initialPrompt: `Usar ferramenta: ${command.label}` });
+      if (AI_TOOLS[toolKey]) {
+        onNavigate('tool-interface', { toolKey });
+      } else {
+        onNavigate('chatbot', { initialPrompt: `Usar ferramenta: ${command.label}` });
+      }
     } else {
       onNavigate(command.id);
     }

@@ -90,7 +90,15 @@ export const NexusApp = () => {
 
   // Apply theme
   useEffect(() => {
-    document.documentElement.className = appState.theme;
+    const root = document.documentElement;
+    root.className = appState.theme;
+    
+    // Add cyberpunk class if needed
+    if (appState.theme === 'cyberpunk') {
+      document.body.classList.add('cyberpunk-scanlines');
+    } else {
+      document.body.classList.remove('cyberpunk-scanlines');
+    }
   }, [appState.theme]);
 
   const handleThemeChange = (theme: string) => {
@@ -139,46 +147,49 @@ export const NexusApp = () => {
     }
   };
 
-  const handleChatSubmit = (message: string): Promise<string> => {
+  const handleChatSubmit = async (message: string): Promise<string> => {
     if (!appState.apiKey) {
       toast.error("Configure sua chave de API nas configurações primeiro!");
       handleNavigate('settings');
-      return Promise.reject("API key not configured");
+      throw new Error("API key not configured");
     }
 
-    return new Promise((resolve) => {
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: message,
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: message,
+      timestamp: new Date()
+    };
+
+    setAppState(prev => ({
+      ...prev,
+      currentView: 'chatbot',
+      chatMessages: [...prev.chatMessages, userMessage],
+      isLoading: true
+    }));
+
+    try {
+      // Simulate AI response (replace with actual Google Gemini API call)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `Esta é uma resposta simulada para: "${message}". Em uma implementação real, aqui estaria a resposta da API do Google Gemini usando sua chave de API configurada.`,
         timestamp: new Date()
       };
 
       setAppState(prev => ({
         ...prev,
-        currentView: 'chatbot',
-        chatMessages: [...prev.chatMessages, userMessage],
-        isLoading: true
+        chatMessages: [...prev.chatMessages, aiResponse],
+        isLoading: false
       }));
-
-      // Simulate AI response (replace with actual API call)
-      setTimeout(() => {
-        const aiResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: `Esta é uma resposta simulada para: "${message}". Em uma implementação real, aqui estaria a resposta da API do Google Gemini usando sua chave de API configurada.`,
-          timestamp: new Date()
-        };
-
-        setAppState(prev => ({
-          ...prev,
-          chatMessages: [...prev.chatMessages, aiResponse],
-          isLoading: false
-        }));
-        
-        resolve(aiResponse.content);
-      }, 2000);
-    });
+      
+      return aiResponse.content;
+    } catch (error) {
+      setAppState(prev => ({ ...prev, isLoading: false }));
+      throw error;
+    }
   };
 
   const renderCurrentView = () => {
@@ -191,6 +202,7 @@ export const NexusApp = () => {
             projects={appState.projects}
             onNavigate={handleNavigate}
             onChatSubmit={handleChatSubmit}
+            onNewProject={handleNewProject}
           />
         );
       
@@ -215,13 +227,18 @@ export const NexusApp = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-3xl font-bold font-manrope mb-6">{currentProject.name}</h1>
-              <div className="glass p-8 rounded-2xl text-center">
-                <h3 className="text-xl font-semibold mb-4">Em Desenvolvimento</h3>
-                <p className="text-muted-foreground">
-                  A visualização de projetos e ferramentas de IA serão implementadas em breve.
-                </p>
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h1 className="text-4xl font-bold font-manrope mb-2">{currentProject.name}</h1>
+                  <p className="text-muted-foreground">
+                    Escolha uma ferramenta de IA para começar a trabalhar
+                  </p>
+                </div>
               </div>
+              <ToolsExplorer
+                onSelectTool={(toolKey) => handleNavigate('tool-interface', { toolKey, projectId: currentProject.id })}
+                onNavigate={handleNavigate}
+              />
             </motion.div>
           </div>
         );
@@ -299,6 +316,7 @@ export const NexusApp = () => {
             projects={appState.projects}
             onNavigate={handleNavigate}
             onChatSubmit={handleChatSubmit}
+            onNewProject={handleNewProject}
           />
         );
     }

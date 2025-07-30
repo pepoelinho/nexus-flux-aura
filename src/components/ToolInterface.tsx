@@ -1,12 +1,26 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Send, Copy, Download, Star, Sparkles, Loader, Crown } from "lucide-react";
+import { ArrowLeft, Send, Copy, Download, Star, Sparkles, Loader, Crown, FileText, Code2, Briefcase, GraduationCap, Palette, Zap, Globe, MessageCircle, TrendingUp } from "lucide-react";
 import { AI_TOOLS } from "@/data/aiTools";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { toast } from "sonner";
+
+// Icon mapping for categories
+const CATEGORY_ICONS = {
+  'texto': FileText,
+  'imagem': Palette,
+  'codigo': Code2,
+  'negocios': Briefcase,
+  'educacao': GraduationCap,
+  'criatividade': Sparkles,
+  'produtividade': Zap,
+  'web': Globe,
+  'comunicacao': MessageCircle,
+  'analise': TrendingUp
+};
 
 interface ToolInterfaceProps {
   toolKey: string;
@@ -25,6 +39,8 @@ export const ToolInterface = ({ toolKey, onBack, onGenerate }: ToolInterfaceProp
 
   const tool = AI_TOOLS[toolKey];
   if (!tool) return null;
+
+  const CategoryIcon = CATEGORY_ICONS[tool.category as keyof typeof CATEGORY_ICONS] || FileText;
 
   const handleGenerate = async () => {
     if (!input.trim()) {
@@ -161,10 +177,7 @@ export const ToolInterface = ({ toolKey, onBack, onGenerate }: ToolInterfaceProp
                 className="p-3 bg-primary/10 rounded-xl"
                 whileHover={{ rotate: 5 }}
               >
-                <div className="w-6 h-6 text-primary flex items-center justify-center">
-                  {/* Icon placeholder */}
-                  <div className="w-full h-full bg-primary/30 rounded"></div>
-                </div>
+                <CategoryIcon className="w-6 h-6 text-primary" />
               </motion.div>
               
               <div>

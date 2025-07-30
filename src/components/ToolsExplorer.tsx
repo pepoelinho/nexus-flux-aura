@@ -1,9 +1,23 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Star, Crown, Filter, Grid, List, ArrowRight } from "lucide-react";
+import { Search, Star, Crown, Filter, Grid, List, ArrowRight, FileText, Sparkles, BookOpen, Code2, Briefcase, GraduationCap, Palette, Zap, Globe, MessageCircle, TrendingUp } from "lucide-react";
 import { AI_TOOLS, AI_TOOL_CATEGORIES, getToolsByCategory, getAllCategories, getCategoryInfo, searchTools } from "@/data/aiTools";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+
+// Icon mapping for categories
+const CATEGORY_ICONS = {
+  'texto': FileText,
+  'imagem': Palette,
+  'codigo': Code2,
+  'negocios': Briefcase,
+  'educacao': GraduationCap,
+  'criatividade': Sparkles,
+  'produtividade': Zap,
+  'web': Globe,
+  'comunicacao': MessageCircle,
+  'analise': TrendingUp
+};
 
 interface ToolsExplorerProps {
   onSelectTool: (toolKey: string) => void;
@@ -53,6 +67,7 @@ export const ToolsExplorer = ({ onSelectTool, onNavigate }: ToolsExplorerProps) 
 
   const ToolCard = ({ toolKey, tool }: { toolKey: string; tool: any }) => {
     const isFavorite = favorites.includes(toolKey);
+    const CategoryIcon = CATEGORY_ICONS[tool.category as keyof typeof CATEGORY_ICONS] || FileText;
     
     return (
       <motion.div
@@ -71,10 +86,7 @@ export const ToolsExplorer = ({ onSelectTool, onNavigate }: ToolsExplorerProps) 
             }`}
             whileHover={{ rotate: 5 }}
           >
-            <div className="w-8 h-8 text-primary flex items-center justify-center">
-              {/* Icon placeholder - in real implementation, use Lucide icons */}
-              <div className="w-full h-full bg-primary/20 rounded"></div>
-            </div>
+            <CategoryIcon className="w-8 h-8 text-primary" />
           </motion.div>
           
           <div className={viewMode === 'list' ? 'flex-1' : ''}>
@@ -188,6 +200,7 @@ export const ToolsExplorer = ({ onSelectTool, onNavigate }: ToolsExplorerProps) 
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => {
               const info = getCategoryInfo(category);
+              const CategoryIcon = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || FileText;
               return (
                 <Button
                   key={category}
@@ -196,7 +209,7 @@ export const ToolsExplorer = ({ onSelectTool, onNavigate }: ToolsExplorerProps) 
                   onClick={() => setSelectedCategory(category)}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-4 h-4 bg-current rounded opacity-60"></div>
+                  <CategoryIcon className="w-4 h-4" />
                   {info?.name}
                 </Button>
               );
