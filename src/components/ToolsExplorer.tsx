@@ -135,13 +135,13 @@ export const ToolsExplorer = ({ onSelectTool, onNavigate }: ToolsExplorerProps) 
 
   return (
     <motion.div
-      className="h-full flex flex-col"
+      className="h-full flex flex-col overflow-y-auto"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
     >
-      {/* Header */}
-      <motion.div className="mb-8" variants={itemVariants}>
+      {/* Header - now scrolls with content */}
+      <motion.div className="mb-8 flex-shrink-0" variants={itemVariants}>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-4xl font-bold font-manrope text-foreground mb-2">
@@ -230,7 +230,7 @@ export const ToolsExplorer = ({ onSelectTool, onNavigate }: ToolsExplorerProps) 
       )}
 
       {/* Tools Grid */}
-      <motion.div className="flex-1 overflow-y-auto">
+      <motion.div className="flex-shrink-0 pb-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${selectedCategory}-${searchQuery}-${viewMode}`}

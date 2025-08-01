@@ -10,6 +10,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CreateProjectModal } from "./CreateProjectModal";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -17,7 +18,7 @@ interface SidebarProps {
   currentView: string;
   projects: any[];
   onNavigate: (view: string, data?: any) => void;
-  onNewProject: () => void;
+  onNewProject: (projectName: string) => void;
 }
 
 export const Sidebar = ({ 
@@ -153,15 +154,16 @@ export const Sidebar = ({
               )}
             </AnimatePresence>
             
-            <motion.button
-              onClick={onNewProject}
-              className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              title="Novo Projeto"
-            >
-              <Plus className="w-4 h-4" />
-            </motion.button>
+            <CreateProjectModal onCreateProject={onNewProject}>
+              <motion.button
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                title="Novo Projeto"
+              >
+                <Plus className="w-4 h-4" />
+              </motion.button>
+            </CreateProjectModal>
           </div>
 
           <div className="space-y-1">

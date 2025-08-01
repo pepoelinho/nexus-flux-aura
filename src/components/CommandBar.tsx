@@ -3,12 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Zap, FileText, MessageCircle, Settings, Plus, Book, Code, PenTool, Sparkles, Globe, Briefcase, GraduationCap, Palette, TrendingUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { AI_TOOLS, getAllCategories, getCategoryInfo } from "@/data/aiTools";
+import { CreateProjectModal } from "./CreateProjectModal";
 
 interface CommandBarProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (view: string, data?: any) => void;
-  onCreateProject: () => void;
+  onCreateProject: (projectName: string) => void;
   onCreateDocument: () => void;
 }
 
@@ -74,7 +75,11 @@ export const CommandBar = ({ isOpen, onClose, onNavigate, onCreateProject, onCre
 
   const executeCommand = (command: typeof COMMANDS[0]) => {
     if (command.id === 'new-project') {
-      onCreateProject();
+      // For CommandBar, we'll use a modal trigger
+      const projectName = prompt("Nome do projeto:");
+      if (projectName?.trim()) {
+        onCreateProject(projectName.trim());
+      }
     } else if (command.id === 'new-document') {
       onCreateDocument();
     } else if (command.id.startsWith('ai-')) {

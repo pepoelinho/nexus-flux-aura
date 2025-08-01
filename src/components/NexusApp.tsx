@@ -9,6 +9,7 @@ import { CommandBar } from "./CommandBar";
 import { ThemeSelector } from "./ThemeSelector";
 import { ToolsExplorer } from "./ToolsExplorer";
 import { ToolInterface } from "./ToolInterface";
+import { CreateProjectModal } from "./CreateProjectModal";
 import { toast } from "sonner";
 
 // Import AI Tools from centralized data
@@ -125,16 +126,14 @@ export const NexusApp = () => {
     }));
   };
 
-  const handleNewProject = () => {
-    const projectName = prompt("Nome do projeto:");
-    if (projectName?.trim()) {
-      const newProject: Project = {
-        id: Date.now().toString(),
-        name: projectName.trim(),
-        documents: [],
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+  const handleCreateProject = (projectName: string) => {
+    const newProject: Project = {
+      id: Date.now().toString(),
+      name: projectName,
+      documents: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
       
       setAppState(prev => ({
         ...prev,
@@ -144,7 +143,6 @@ export const NexusApp = () => {
       }));
       
       toast.success("Projeto criado com sucesso!");
-    }
   };
 
   const handleChatSubmit = async (message: string): Promise<string> => {
@@ -202,7 +200,7 @@ export const NexusApp = () => {
             projects={appState.projects}
             onNavigate={handleNavigate}
             onChatSubmit={handleChatSubmit}
-            onNewProject={handleNewProject}
+            onNewProject={handleCreateProject}
           />
         );
       
@@ -316,7 +314,7 @@ export const NexusApp = () => {
             projects={appState.projects}
             onNavigate={handleNavigate}
             onChatSubmit={handleChatSubmit}
-            onNewProject={handleNewProject}
+            onNewProject={handleCreateProject}
           />
         );
     }
@@ -342,7 +340,7 @@ export const NexusApp = () => {
           currentView={appState.currentView}
           projects={appState.projects}
           onNavigate={handleNavigate}
-          onNewProject={handleNewProject}
+          onNewProject={handleCreateProject}
         />
 
         <main className="flex-1 overflow-hidden">
@@ -364,7 +362,7 @@ export const NexusApp = () => {
           isOpen={commandBarOpen}
           onClose={() => setCommandBarOpen(false)}
           onNavigate={handleNavigate}
-          onCreateProject={handleNewProject}
+          onCreateProject={handleCreateProject}
           onCreateDocument={() => {/* TODO: Implement */}}
         />
       </motion.div>

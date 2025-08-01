@@ -1,12 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ArrowRight, Folder, Clock, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { CreateProjectModal } from "./CreateProjectModal";
 
 interface DashboardProps {
   projects: any[];
   onNavigate: (view: string, data?: any) => void;
   onChatSubmit: (message: string) => void;
-  onNewProject?: () => void;
+  onNewProject?: (projectName: string) => void;
 }
 
 export const Dashboard = ({ projects, onNavigate, onChatSubmit, onNewProject }: DashboardProps) => {
@@ -226,22 +227,41 @@ export const Dashboard = ({ projects, onNavigate, onChatSubmit, onNewProject }: 
               </p>
             </motion.button>
             
-            <motion.button
-              onClick={() => onNewProject && onNewProject()}
-              className="glass p-4 rounded-xl text-center hover-glow group"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="w-12 h-12 bg-primary/10 rounded-lg mx-auto mb-3 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Folder className="w-6 h-6 text-primary" />
-              </div>
-              <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
-                Novo Projeto
-              </h4>
-              <p className="text-sm text-muted-foreground mt-1">
-                Organize seus documentos
-              </p>
-            </motion.button>
+            {onNewProject ? (
+              <CreateProjectModal onCreateProject={onNewProject}>
+                <motion.button
+                  className="glass p-4 rounded-xl text-center hover-glow group w-full"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg mx-auto mb-3 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Folder className="w-6 h-6 text-primary" />
+                  </div>
+                  <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    Novo Projeto
+                  </h4>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Organize seus documentos
+                  </p>
+                </motion.button>
+              </CreateProjectModal>
+            ) : (
+              <motion.button
+                className="glass p-4 rounded-xl text-center hover-glow group"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="w-12 h-12 bg-primary/10 rounded-lg mx-auto mb-3 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <Folder className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">
+                  Novo Projeto
+                </h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Organize seus documentos
+                </p>
+              </motion.button>
+            )}
           </div>
         </motion.div>
       </div>
